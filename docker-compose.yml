@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    ports:
+      - "8500:8500"
+    networks:
+      - microservices-network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - consul
+    networks:
+      - microservices-network
+
+  service-registry:
+    build: ./service-registry
+    container_name: service-registry
+    environment:
+      - SERVICE_NAME=example-service
+    depends_on:
+      - consul
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge

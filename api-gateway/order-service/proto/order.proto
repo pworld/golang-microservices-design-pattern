@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "order-service/generated";
+
+service OrderService {
+  rpc GetOrder (OrderRequest) returns (OrderResponse);
+}
+
+message OrderRequest {
+  string order_id = 1;
+}
+
+message OrderResponse {
+  string order_id = 1;
+  string status = 2;
+  string customer_name = 3;
+}

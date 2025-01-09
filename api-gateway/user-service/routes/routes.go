@@ -8,6 +8,6 @@ import (
 
 // SetupRoutes initializes user routes
 func SetupRoutes(e *echo.Echo) {
-	e.POST("/api/user/login", handlers.LoginUser) // Login route
-	e.GET("/api/user/profile", handlers.GetProfile)
+	e.POST("/login", handlers.LoginUser)
+	e.GET("/profile", handlers.GetProfile)
 }

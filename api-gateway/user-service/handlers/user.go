@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
@@ -22,6 +25,25 @@ func LoginUser(c echo.Context) error {
 		return err
 	}
 
+	// Debug Log: Print environment variable
+	if os.Getenv("RUNNING_IN_DOCKER") == "" {
+		// Load .env file only in local environment
+		err := godotenv.Load("local.env")
+		if err != nil {
+			log.Fatal("Error loading local.env file")
+		}
+	} else {
+		fmt.Println("Running inside Docker, skipping .env file loading")
+	}
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		log.Println("JWT_SECRET not set inside user-service")
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "JWT_SECRET not set"})
+	} else {
+		log.Printf("JWT_SECRET inside user-service: %s", jwtSecret)
+	}
+
 	// Hardcoded user credentials (Replace with DB lookup)
 	if user.Username != "john" || user.Password != "1234" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid credentials"})
@@ -34,11 +56,6 @@ func LoginUser(c echo.Context) error {
 	})
 
 	// Sign token with JWT_SECRET
-	jwtSecret := os.Getenv("JWT_SECRET")
-	if jwtSecret == "" {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "JWT_SECRET not set"})
-	}
-
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to generate token"})

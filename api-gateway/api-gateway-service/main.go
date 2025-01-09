@@ -17,6 +17,12 @@ import (
 func main() {
 	fmt.Println("API Gateway started on port 8080...")
 
+	// Debug: Print all environment variables
+	fmt.Println("🔍 Loaded Environment Variables:")
+	for _, e := range os.Environ() {
+		fmt.Println(e)
+	}
+
 	// Check if running inside a Docker container
 	if os.Getenv("RUNNING_IN_DOCKER") == "" {
 		// Load .env file only in local environment
@@ -24,12 +30,16 @@ func main() {
 		if err != nil {
 			log.Fatal("Error loading local.env file")
 		}
+	} else {
+		fmt.Println("Running inside Docker, skipping .env file loading")
 	}
 
 	// Load JWT secret
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
 		log.Fatal("JWT_SECRET environment variable is not set")
+	} else {
+		fmt.Println("JWT_SECRET successfully loaded")
 	}
 
 	// Initialize gRPC client for order service

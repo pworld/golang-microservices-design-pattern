@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  order-service:
+    build: ./order-services
+    ports:
+      - "8081:8081"
+
+  circuit-breaker-service:
+    build: ./circuit-breaker-services
+    ports:
+      - "8080:8080"
+    depends_on:
+      - order-service

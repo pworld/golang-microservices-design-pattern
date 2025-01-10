@@ -3,22 +3,21 @@ package main
 import (
 	"circuit-breaker-services/src/handler"
 	"circuit-breaker-services/src/service"
+	"fmt"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
-	logrus.SetFormatter(&logrus.JSONFormatter{})
-	logrus.Info("Starting Circuit Breaker Service")
-
 	orderServiceURL := "http://order-service:8081/orders"
 	svc := service.NewService(orderServiceURL)
 	h := handler.NewHandler(svc)
 
 	http.HandleFunc("/orders", h.HandleRequest)
+	http.Handle("/metrics", promhttp.Handler()) // Expose Prometheus metrics
 
 	port := ":8080"
-	logrus.Infof("Circuit Breaker Service running on port %s", port)
+	fmt.Println("Circuit Breaker Service running on port", port)
 	http.ListenAndServe(port, nil)
 }

@@ -3,9 +3,9 @@ package circuitbreaker
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"time"
 
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/sony/gobreaker"
 )
 
@@ -24,8 +24,13 @@ func init() {
 }
 
 func CallOrderService(url string) (string, error) {
+	client := retryablehttp.NewClient()
+	client.RetryMax = 3
+	client.RetryWaitMin = 1 * time.Second
+	client.RetryWaitMax = 5 * time.Second
+
 	result, err := cb.Execute(func() (interface{}, error) {
-		resp, err := http.Get(url)
+		resp, err := client.Get(url)
 		if err != nil {
 			return nil, err
 		}

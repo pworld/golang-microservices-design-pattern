@@ -1,7 +1,21 @@
 version: '3.8'
 
 services:
+  order-service:
+    build: ./order-services
+    ports:
+      - "8081:8081"
+
   circuit-breaker-service:
-    build: .
+    build: ./circuit-breaker-services
     ports:
       - "8080:8080"
+    depends_on:
+      - order-service
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"

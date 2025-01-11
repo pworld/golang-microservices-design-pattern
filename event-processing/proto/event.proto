@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package event;
+
+service EventService {
+  rpc GetProcessedMessages (Empty) returns (MessageList);
+}
+
+message Empty {}
+
+message Message {
+  string content = 1;
+  string timestamp = 2;
+}
+
+message MessageList {
+  repeated Message messages = 1;
+}

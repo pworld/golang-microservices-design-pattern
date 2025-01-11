@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-config
+data:
+  grafana-config.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "uid": "event-processing-dashboard",
+        "title": "Event Processing Monitoring",
+        "tags": ["Kafka", "Prometheus", "Microservices"],
+        "timezone": "browser",
+        "schemaVersion": 26,
+        "version": 1,
+        "refresh": "5s",
+        "panels": [
+          {
+            "title": "Produced Events",
+            "type": "timeseries",
+            "gridPos": { "x": 0, "y": 0, "w": 12, "h": 4 },
+            "targets": [
+              {
+                "expr": "producer_events_produced_total",
+                "legendFormat": "Produced",
+                "refId": "A"
+              }
+            ]
+          },
+          {
+            "title": "Consumed Events",
+            "type": "timeseries",
+            "gridPos": { "x": 0, "y": 4, "w": 12, "h": 4 },
+            "targets": [
+              {
+                "expr": "consumer_events_consumed_total",
+                "legendFormat": "Consumed",
+                "refId": "B"
+              }
+            ]
+          },
+          {
+            "title": "Kafka Message Lag",
+            "type": "gauge",
+            "gridPos": { "x": 0, "y": 8, "w": 12, "h": 4 },
+            "targets": [
+              {
+                "expr": "kafka_consumergroup_lag",
+                "legendFormat": "Lag",
+                "refId": "C"
+              }
+            ]
+          }
+        ]
+      }
+    }

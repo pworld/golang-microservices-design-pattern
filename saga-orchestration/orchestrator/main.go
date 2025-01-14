@@ -23,11 +23,11 @@ type OrderRequest struct {
 
 func main() {
 	if kafkaBroker == "" {
-		log.Fatal("❌ KAFKA_BROKER environment variable is not set")
+		log.Fatal("KAFKA_BROKER environment variable is not set")
 	}
 
-	fmt.Println("✅ Saga Orchestrator Started on port 8080...")
-	fmt.Printf("✅ Connecting to Kafka at: %s\n", kafkaBroker)
+	fmt.Println("Saga Orchestrator Started on port 8080...")
+	fmt.Printf("Connecting to Kafka at: %s\n", kafkaBroker)
 
 	// Start HTTP Server
 	go func() {

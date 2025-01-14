@@ -23,18 +23,18 @@ type SyncTransactionRequest struct {
 
 func main() {
 	if kafkaBroker == "" {
-		log.Fatal("❌ KAFKA_BROKER environment variable is not set")
+		log.Fatal("KAFKA_BROKER environment variable is not set")
 	}
 
-	fmt.Println("✅ Saga Synchronization Service Started on port 8083...")
-	fmt.Printf("✅ Connecting to Kafka at: %s\n", kafkaBroker)
+	fmt.Println("Saga Synchronization Service Started on port 8083...")
+	fmt.Printf("Connecting to Kafka at: %s\n", kafkaBroker)
 
 	// Retry Kafka connection until the topic is available
 	for i := 0; i < 5; i++ {
 		if topicExists(topic) {
 			break
 		}
-		fmt.Println("🔄 Waiting for Kafka topic to be available...")
+		fmt.Println("Waiting for Kafka topic to be available...")
 		time.Sleep(5 * time.Second)
 	}
 
@@ -60,7 +60,7 @@ func syncTransactionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("🔄 Processing Synchronous Transaction for Order ID: %s\n", request.OrderID)
+	fmt.Printf("Processing Synchronous Transaction for Order ID: %s\n", request.OrderID)
 
 	// Simulating synchronous process with a delay
 	time.Sleep(2 * time.Second)
@@ -76,7 +76,7 @@ func syncTransactionHandler(w http.ResponseWriter, r *http.Request) {
 func topicExists(topic string) bool {
 	conn, err := kafka.Dial("tcp", kafkaBroker)
 	if err != nil {
-		fmt.Println("❌ Error connecting to Kafka:", err)
+		fmt.Println("Error connecting to Kafka:", err)
 		return false
 	}
 	defer conn.Close()
@@ -103,7 +103,7 @@ func publishEvent(eventType, orderID string) {
 	)
 
 	if err != nil {
-		log.Fatalf("❌ Failed to publish event: %v", err)
+		log.Fatalf("Failed to publish event: %v", err)
 	}
-	fmt.Printf("✅ Published event: %s\n", eventData)
+	fmt.Printf("Published event: %s\n", eventData)
 }

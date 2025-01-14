@@ -1,20 +1,33 @@
-FROM golang:1.23 as builder
+# Use Golang base image
+FROM golang:1.23 AS builder  
 
 WORKDIR /app
 
+# Copy Go module files
 COPY go.mod go.sum ./
+
+# Download dependencies
 RUN go mod download
 
+# Copy application source code
 COPY . .
 
-RUN go build -o order-service main.go
+# Build a static binary compatible with Alpine Linux
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/order-service main.go
 
+# Use a minimal runtime image
 FROM alpine:latest
 
 WORKDIR /root/
 
-COPY --from=builder /app/order-service .
+# Copy the built binary
+COPY --from=builder /app/order-service /root/order-service
 
+# Set executable permissions
+RUN chmod +x /root/order-service
+
+# Expose API port (adjust as needed)
 EXPOSE 8081
 
-CMD ["./order-service"]
+# Run the application
+CMD ["/root/order-service"]

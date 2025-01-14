@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	kafkaBroker = "localhost:9092"
+	kafkaBroker = "kafka:9092"
 	topic       = "order_events"
 )
 

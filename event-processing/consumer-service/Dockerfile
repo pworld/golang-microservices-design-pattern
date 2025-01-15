@@ -1,26 +1,32 @@
-# Use a minimal Go image as the build stage
+# Build Stage
 FROM golang:1.23 AS builder
-
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy go module files and download dependencies
-COPY go.mod go.sum ./
+# Copy Go modules
+COPY consumer-service/go.mod consumer-service/go.sum ./
 RUN go mod tidy
 
-# Copy the rest of the application files
-COPY . .
+# Copy the full application source code
+COPY consumer-service/ .
 
 # Build the Go binary
-RUN go build -o consumer-service .
+RUN go build -o event-processing-consumer .
 
-# Use a lightweight image for the final container
-FROM alpine:latest AS runtime
+# Final Stage
+FROM alpine:latest
 WORKDIR /root/
-COPY --from=builder /app/consumer-service .
 
-# Expose the necessary port
-EXPOSE 8081
+# Copy the built binary
+COPY --from=builder /app/event-processing-consumer /event-processing-consumer
 
-# Run the application
-CMD ["./consumer-service"]
+# Ensure executable permissions
+RUN chmod +x /event-processing-consumer
+
+# Debug: Verify the file exists
+RUN ls -lah /event-processing-consumer
+
+# Expose port
+EXPOSE 9090
+
+# Run the binary
+CMD ["/event-processing-consumer"]

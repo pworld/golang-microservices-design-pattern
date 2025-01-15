@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s  # How often to scrape targets
+  evaluation_interval: 15s
+
+# Alerting rules
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Define scrape configs
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka:9092']
+
+  - job_name: 'producer'
+    static_configs:
+      - targets: ['producer:8080']
+
+  - job_name: 'consumer'
+    static_configs:
+      - targets: ['consumer:8081']
+

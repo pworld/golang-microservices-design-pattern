@@ -25,38 +25,44 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
 
   producer:
-    build: ./producer-service
-    container_name: producer
+    image: event-processing-producer:latest
+    build:
+      context: .
+      dockerfile: producer-service/Dockerfile
+    container_name: event-processing-producer
     depends_on:
       - kafka
     ports:
       - "8080:8080"
+    command: ["/event-processing-producer"]
 
   consumer:
-    build: ./consumer-service
-    container_name: consumer
+    image: event-processing-consumer:latest
+    build:
+      context: .
+      dockerfile: consumer-service/Dockerfile
+    container_name: event-processing-consumer
     depends_on:
       - kafka
     ports:
       - "9090:9090"
+    command: ["/event-processing-consumer"]
 
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
       - "9091:9090"
 
-  services:
-    grafana:
-      image: grafana/grafana:latest
-      container_name: grafana
-      ports:
-        - "3000:3000"
-      volumes:
-        - ./monitoring/grafana-config.json:/etc/grafana/provisioning/dashboards/grafana-config.json
-      environment:
-        - GF_SECURITY_ADMIN_PASSWORD=admin
-        - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/grafana-config.json
-
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana-config.json:/etc/grafana/provisioning/dashboards/grafana-config.json:ro
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/grafana-config.json
